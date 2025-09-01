@@ -1,0 +1,122 @@
+1. Read a .csv file from a URL with pandas
+import pandas as pd
+
+df_premier21 = pd.read_csv('https://www.football-data.co.uk/mmz4281/2122/E0.csv')
+
+print(df_premier21)
+
+df_premier21.rename(columns={
+    'FTHG': 'home_goals',
+    'FTAG': 'away_goals'
+}, inplace=True)
+
+print(df_premier21)
+
+2. Read a multiple .csv file from a URL with pandas
+import pandas as pd
+
+
+root = "https://www.football-data.co.uk/mmz4281/"
+season = '2122'
+
+leagues = ['E0', 'E1', 'E2', 'E3', 'EC']  # EPL, Championship, League One, League Two, Conference
+
+frames = []
+
+for league in leagues:
+    url = root + season + '/' + league + '.csv'
+    df = pd.read_csv(url, encoding='unicode_escape')
+    df['league'] = league  # Optional: Add a column for league code
+    frames.append(df)
+
+df_all_leagues = pd.concat(frames, ignore_index=True)
+
+print(df_all_leagues.head())  
+
+3. Multiple leagues
+
+import pandas as pd
+
+leagues = ['E0', 'E1', 'E2', 'E3', 'EC']
+frames = []
+
+root = "https://www.football-data.co.uk/mmz4281/"
+
+for league in leagues:
+    url = root + '2122' + '/' + league + '.csv'
+    df = pd.read_csv(url)
+    frames.append(df)
+
+print(len(frames))  
+
+4. Multiple session
+import pandas as pd
+
+# base url for CSVs
+root = "https://www.football-data.co.uk/mmz4281/"
+
+# list of leagues
+leagues = ['E0', 'E1', 'E2', 'E3', 'EC']
+frames = []
+
+# loop through leagues and seasons
+for league in leagues:
+    for season in range(15, 21):  # 2015–16 to 2020–21
+        season_str = str(season) + str(season + 1)  # e.g. "1516"
+        url = f"{root}{season_str}/{league}.csv"
+        
+        try:
+            df = pd.read_csv(url, encoding="latin1")
+            df["League"] = league
+            df["Season"] = season_str
+            frames.append(df)
+        except Exception as e:
+            print(f"Could not load {url}: {e}")
+
+# combine into a single dataframe
+data = pd.concat(frames, ignore_index=True)
+
+# preview the first few rows
+print(data.head())
+
+
+5. Organize All Data in Dictionary
+
+import pandas as pd
+
+# dictionary mapping leagues to their codes
+dict_countries = {
+    'Spanish La Liga': 'SP1',
+    'Spanish Segunda Division': 'SP2',
+    'German Bundesliga': 'D1',
+    'English Premier League': 'E0',
+    'English League 1': 'E2',
+    'English League 2': 'E3'
+}
+
+# path to your data files
+root = "./data/"
+
+# dictionary to store historical data
+dict_historical_data = {}
+
+# loop through each league and season
+for league in dict_countries:
+    frames = []
+    for season in range(15, 21):   # example: 2015–2020
+        file_path = f"{root}{season}{season+1}/{dict_countries[league]}.csv"
+        df = pd.read_csv(file_path)
+        df.insert(1, 'season', f"{season}/{season+1}")
+        frames.append(df)
+    
+    # combine all seasons into one DataFrame
+    df_concat = pd.concat(frames, ignore_index=True)
+    dict_historical_data[league] = df_concat
+
+# check dictionary keys (league names)
+print(dict_historical_data.keys())
+
+# example: show first rows of Premier League
+print(dict_historical_data['English Premier League'].head())
+
+
