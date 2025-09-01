@@ -71,3 +71,138 @@ df_laptops[(df_laptops['Company'] == 'Apple') & (df_laptops['Price_euros'] > 200
 # Example: Find laptops that are either Apple or Dell
 df_laptops[(df_laptops['Company'] == 'Apple') | (df_laptops['Company'] == 'Dell')]
 
+Examples
+1.filter match
+import pandas as pd
+
+# Sample data
+data = {
+    "Team": ["Arsenal", "Chelsea", "Liverpool", "Man City", "Man United"],
+    "Points": [83, 75, 89, 93, 74],
+    "Goals_Scored": [88, 76, 94, 99, 73]
+}
+
+df = pd.DataFrame(data)
+print("Original DataFrame:")
+print(df)
+
+# Filter teams with more than 80 points
+filtered = df[df["Points"] > 80]
+
+print("\nTeams with more than 80 points:")
+print(filtered)
+
+2. Multiple matches
+
+# Teams with more than 80 points AND more than 90 goals
+filtered = df[(df["Points"] > 80) & (df["Goals_Scored"] > 90)]
+
+print("\nTeams with >80 points AND >90 goals:")
+print(filtered)
+
+3. import pandas as pd
+import numpy as np
+
+# Sample DataFrame
+data = {
+    "Name": ["Alice", "Bob", "Charlie", "David", "Eva"],
+    "Score": [92, 67, 45, 80, 55]
+}
+
+df = pd.DataFrame(data)
+
+# Define conditions
+conditions = [
+    (df["Score"] >= 85),       # Condition 1
+    (df["Score"] >= 60) & (df["Score"] < 85),  # Condition 2
+    (df["Score"] < 60)         # Condition 3
+]
+
+# Define corresponding choices
+choices = ["Excellent", "Pass", "Fail"]
+
+# Create new column
+df["Result"] = np.select(conditions, choices)
+
+print(df)
+
+4.  # Sample DataFrame
+df2 = pd.DataFrame({
+    "Student": ["A", "B", "C", "D", "E"],
+    "Marks": [95, 76, 58, 40, 83]
+})
+
+# Define conditions
+conditions = [
+    (df2["Marks"] >= 90),
+    (df2["Marks"] >= 75) & (df2["Marks"] < 90),
+    (df2["Marks"] >= 50) & (df2["Marks"] < 75),
+    (df2["Marks"] < 50)
+]
+
+# Define choices
+choices = ["A", "B", "C", "F"]
+
+# Create new column
+df2["Grade"] = np.select(conditions, choices)
+
+print(df2)
+5. isin() Single filtering
+import pandas as pd
+
+# Sample DataFrame
+df = pd.DataFrame({
+    "Name": ["Alex", "Bella", "Chris", "Diana", "Ethan"],
+    "City": ["London", "Paris", "London", "Berlin", "Paris"]
+})
+
+# Filter rows where City is London
+filtered = df[df["City"].isin(["London"])]
+
+print(filtered)
+
+6. Multiple filtering
+# Filter rows where City is either London or Berlin
+filtered_multi = df[df["City"].isin(["London", "Berlin"])]
+
+print(filtered_multi)
+
+7. drop_duplicates
+import pandas as pd
+
+df = pd.DataFrame({
+    "Name": ["Alex", "Bella", "Chris", "Alex", "Bella", "David", "Chris"],
+    "City": ["London", "Paris", "Berlin", "London", "Rome", "Rome", "Berlin"]
+})
+
+print(df)
+8. unique()
+print(df["City"].unique())
+
+9. nunique()
+print(df["Name"].nunique())
+
+10. loc()
+import pandas as pd
+
+data = {
+    "Name": ["Alex", "Bella", "Chris", "David", "Eva"],
+    "Age": [25, 30, 22, 35, 28],
+    "City": ["London", "Paris", "Berlin", "Madrid", "Rome"]
+}
+
+df = pd.DataFrame(data, index=["a", "b", "c", "d", "e"])
+print(df)
+
+10.1 # Single row by label
+print(df.loc["b"])
+10.2 # Multiple rows by labels
+print(df.loc[["a", "c", "e"]])
+
+11.nunique
+# First row (index 0)
+print(df.iloc[0])
+
+11.1 # Multiple rows and columns
+print(df.iloc[[0, 2, 4], [0, 2]])
+
