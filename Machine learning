@@ -1,0 +1,60 @@
+1. import pandas as pd
+
+The Data
+
+df_boston = pd.read_csv('Boston House Prices.csv')
+df_boston
+
+2. df_boston.describe()
+
+import pandas as pd
+df_boston = pd.read_csv('Boston House Prices.csv')
+df_boston
+
+
+3. Linear Regression with Statsmodels
+import statsmodels.api as sm
+
+Simple Linear Regression
+
+Define the dependent and independent variable
+y = df_boston['Value'] # dependent variable
+x = df_boston['Rooms'] # independent variable
+
+Exploring the dataset
+df_boston.plot(kind='scatter',
+               x='Rooms',
+               y='Value')
+
+4. Making the regression: Adding a constant and fitting the model
+
+x = sm.add_constant(x) # adding a constant
+lm = sm.OLS(y,x).fit() # fitting the model
+lm.predict(x)
+
+5.The Regression Table
+lm.summary()
+
+6. Linear Regression Equation
+# Rooms coef: 9.1021
+# Constant coef: - 34.6706
+
+# Linear equation: 𝑦 = 𝑎𝑥 + 𝑏
+y_pred = 9.1021*x['Rooms'] - 34.6706
+
+7. Plotting The Regression Line
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+# plotting the data points
+plt.figure(figsize=(6, 4), tight_layout=True)
+sns.scatterplot(x=x['Rooms'], y=y)
+
+#plotting the line
+sns.lineplot(x=x['Rooms'],y=y_pred, color='red')
+
+#axes
+plt.xlim(0)
+plt.ylim(0)
+plt.savefig('linear_regression')
+plt.show()
