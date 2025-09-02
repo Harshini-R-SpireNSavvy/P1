@@ -1,0 +1,171 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+Dataset Overview
+# read csv file
+df_netflix = pd.read_csv('netflix_titles.csv')
+
+# data types
+df_netflix.dtypes
+
+# shape of dataframe
+df_netflix.shape
+(8807, 12)
+
+
+Identifying Missing Data
+# number of rows missing in each column
+df_netflix.isnull().sum().sort_values(ascending=False)
+
+
+# % of rows missing in each column
+for column in df_netflix.columns:
+    percentage = df_netflix[column].isnull().mean()
+    print(f'{column}: {round(percentage*100, 2)}%')
+
+
+Dealing with missing data
+# Remove a column or row with .drop, .dropna or .isnull
+
+# drop column
+df_netflix.drop('director', axis=1)
+# drop row
+no_director = df_netflix[df_netflix['director'].isnull()].index
+df_netflix.drop(no_director, axis=0)
+# drop row
+# no_duration = df_netflix[df_netflix['duration'].isnull()].index
+# df_netflix.drop(no_duration, axis=0, inplace=True)
+
+# ~ + .isnull()
+df_netflix[~df_netflix['director'].isnull()]
+
+# dropna()
+df_netflix.dropna(subset=['director'])
+
+# Replace it by the mean, median (numeric data) or mode (categorical data)
+df_netflix[df_netflix['rating'].isnull()]
+mode = ''.join(df_netflix['rating'].mode())
+df_netflix['rating'].fillna(mode, inplace=True)
+df_netflix[df_netflix['duration'].isnull()]
+
+df_netflix.loc[5541]
+
+# Replace it by an arbitrary number with .fillna()
+df_netflix['duration'].fillna('0', inplace=True)
+
+# backward, forward 
+# df.fillna(method='bfill')
+# df.fillna(method='ffill')
+
+
+Identifying Outliers
+
+df_movie['duration'].str.extract(r'(\d+)', expand=True).loc[5541]
+
+df_movie['rating'].value_counts()
+
+df_movie['duration'].str.split(n=0, expand=True)[0].astype(int)
+
+# selecting only movies
+df_movie = df_netflix[df_netflix['type']=='Movie']
+
+# Split Strings by Characters with the str.split Method
+df_movie = df_movie.assign(minute = df_movie['duration'].str.split(expand=True)[0].astype(int))
+# df_movie = df_movie.assign(minute = df_movie['duration'].str.extract(r'(\d+)', expand=True))
+
+
+Using histograms to identify outliers within numeric data
+# make histogram with pandas
+ax = df_movie['minute'].plot(kind='hist', bins=10)
+
+df_movie['minute']
+
+# get bar ranges with value_counts method and numbers of bins
+df_movie['minute'].value_counts(bins=10).sort_index()
+
+
+# Dealing with outliers
+df_movie[(df_movie['minute']<64.8) | (df_movie['minute']>157.5)].head()
+
+Using boxplot to identify outliers within numeric data
+
+# make a boxplot with pandas
+df_movie['minute'].plot(kind='box', vert=False, color='blue',
+                        figsize=(10,5))
+
+plt.xlabel('Duration (minutes)')
+plt.show()
+
+# overview descriptive statitics
+# IQR = Q3-Q1
+min_boxplot = 87 - 1.5*(114 - 87) # Q1 - 1.5*IQR
+max_boxplot = 114 + 1.5*(114 - 87) # Q3 + 1.5*IQR
+
+print(df_movie['minute'].describe())
+print(min_boxplot)
+print(max_boxplot)
+
+# Dealing with Outliers
+df_movie[(df_movie['minute']<46.5) | (df_movie['minute']>154.5)]
+show_id	type	title	director	cast	country	date_added	release_year	rating	duration	listed_in	description	minute
+
+Using bars to identify outliers within categorical data
+
+# make barplot with pandas
+df_movie['rating'].value_counts().plot(kind='bar', figsize=(10,5))
+<AxesSubplot:>
+
+
+Text Normalization
+Dealing with inconsistent capitalization: lower(), upper(), title()
+
+# change the case of text with the str attribute
+df_movie['title'].str.lower()
+df_movie['title'].str.upper()
+df_movie['title'].str.title()
+
+# update values
+df_movie['title'] = df_movie['title'].str.upper()
+
+# change the case of text with the apply method
+df_movie['title'].apply(lambda x:x.lower())
+
+Remove blank spaces with strip(), lstrip(), and rstrip()
+
+# how the strip method workds
+movie_title = " Titanic    "
+
+# trim leading space with lstrip()
+print(movie_title.lstrip())
+# trim trailing space with rstrip()
+print(movie_title.rstrip())
+# trim leading and trailing space with strip()
+print(movie_title.strip())
+Titanic    
+ Titanic
+Titanic
+# get rid of leading and trailing white spaces with the strip() method
+df_movie['title'] = df_movie['title'].str.strip()
+
+# get rid of leading and trailing white spaces with the apply method
+df_movie['title'].apply(lambda x:x.strip())
+
+
+Replace strings with replace() or sub()
+
+# remove punctuation signs with the str.replace() method and regex
+df_movie['title'].str.replace('[^\w\s]', '', regex=True)
+
+# remove punctuation signs with the replace() method and regex
+df_movie['title'].replace('[^\w\s]', '', regex=True)
+
+# difference between str.replace() and replace()
+# str.replace(): perform string or regex substitution on string data.
+# replace():  can replace any type of data
+
+# df_movie['title'].replace(1, 2, regex=True)
+# df_movie['title'].str.replace(1, 2, regex=True)
+
+# remove punctuation signs with the re.sub() function via teh apply method
+# import re
+# df_movie['title'].apply(lambda x:re.sub('[^\w\s]','',x))
